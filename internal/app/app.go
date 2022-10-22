@@ -12,7 +12,7 @@ const connStr = "user=" + user + " password=" + myPass + " dbname=" + dbname + "
 const GetBalanceEndPoint = "/balance/"
 const AddBalanceEndPoint = "/addBalance"
 const ReserveEndPoint = "/reserve"
-const AcquireOrderEndPoint = "/acquire"
+const AcquireEndPoint = "/acquire"
 
 type Server struct {
 	Storage storage.BalanceStorage

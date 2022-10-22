@@ -12,5 +12,6 @@ func main() {
 	http.HandleFunc(app.GetBalanceEndPoint, s.GetBalanceHandler)
 	http.HandleFunc(app.AddBalanceEndPoint, s.AddBalanceHandler)
 	http.HandleFunc(app.ReserveEndPoint, s.ReserveHandler)
+	http.HandleFunc(app.AcquireEndPoint, s.AcquireHandler)
 	log.Fatal(http.ListenAndServe(app.Addr, nil))
 }
