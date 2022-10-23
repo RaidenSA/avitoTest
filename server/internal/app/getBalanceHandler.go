@@ -8,23 +8,6 @@ import (
 	"strconv"
 )
 
-type balanceStruct struct {
-	UserID  int64
-	Balance float32
-}
-
-/*
-{"userID" : 2,
- "Balance" : 400}
-*/
-
-type transactionStruct struct {
-	UserID    int64
-	ServiceID int64
-	OrderID   int64
-	Sum       float32
-}
-
 func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		log.Println("Not correct method, instead of Get")

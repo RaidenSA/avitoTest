@@ -1,7 +1,7 @@
 package main
 
 import (
-	"avitoTest/internal/app"
+	"avitoTest/server/internal/app"
 	"log"
 	"net/http"
 )

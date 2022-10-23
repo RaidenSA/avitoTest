@@ -1,7 +1,7 @@
 package app
 
 import (
-	"avitoTest/internal/storage"
+	"avitoTest/server/internal/storage"
 )
 
 const Addr = "localhost:8080"
@@ -13,6 +13,30 @@ const GetBalanceEndPoint = "/balance/"
 const AddBalanceEndPoint = "/addBalance"
 const ReserveEndPoint = "/reserve"
 const AcquireEndPoint = "/acquire"
+
+type balanceStruct struct {
+	UserID  int64
+	Balance float32
+}
+
+/*
+{"userID" : 2,
+ "Balance" : 400}
+*/
+
+type transactionStruct struct {
+	UserID    int64
+	ServiceID int64
+	OrderID   int64
+	Sum       float32
+}
+
+/*
+{"userID" : 2,
+"serviceID":1,
+"orderID":1,
+"sum" : 200}
+*/
 
 type Server struct {
 	Storage storage.BalanceStorage

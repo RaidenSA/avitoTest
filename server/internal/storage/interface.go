@@ -1,7 +1,6 @@
 package storage
 
 type BalanceStorage interface {
-	//should change string to int64, int to real
 	//may be unique constrained
 	GetBalance(int64) (float32, bool, error) // user ID, return money
 	InsertBalance(int64, float32) error

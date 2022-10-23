@@ -10,3 +10,11 @@ services:
       - .:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+  server:
+    build: server/
+    command:
+      - ./main
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
