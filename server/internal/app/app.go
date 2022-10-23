@@ -67,7 +67,7 @@ func New() *Server {
 	return s
 }
 
-func Close(s *Server) {
+func (s *Server) Close() {
 	err := s.Storage.Db.Close()
 	if err != nil {
 		log.Fatal(err, "defer error")

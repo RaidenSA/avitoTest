@@ -7,19 +7,7 @@ import (
 )
 
 func (db DataBase) Report(period string) (map[int][]string, int, error) {
-	/*
-		connection, err := sql.Open("postgres", db.ConnStr)
-		if err != nil {
-			return nil, 0, err
-		}
-		defer func(connection *sql.DB) {
-			err := connection.Close()
-			if err != nil {
-				log.Fatal(err, "defer error")
-			}
-		}(connection)
-	*/
-	rows, err := db.Db.Query("select serviceid, sum(sum) from avitotest.public.finished where updated < to_date($1,'YYYY-MM') and updated >to_date($1,'YYYY-MM')-interval '1 month' group by serviceid", period)
+	rows, err := db.Db.Query("select serviceid, sum(sum) from avitotest.public.finished where updated < to_date($1,'YYYY-MM')+interval '1 month' and updated >to_date($1,'YYYY-MM') group by serviceid", period)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -42,6 +30,7 @@ func (db DataBase) Report(period string) (map[int][]string, int, error) {
 		}
 		res[i] = []string{fmt.Sprintf("serviceID: %d", serviceID), fmt.Sprintf("income: %.2f", sum)}
 	}
+
 	err = rows.Err()
 	if err != nil {
 		log.Println("rows error", err)

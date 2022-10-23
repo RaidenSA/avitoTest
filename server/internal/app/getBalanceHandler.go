@@ -14,6 +14,7 @@ func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only Get method", http.StatusMethodNotAllowed)
 		return
 	}
+
 	q := r.URL.String()
 	q = q[(len(GetBalanceEndPoint)):]
 	log.Println(q)
@@ -22,6 +23,7 @@ func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Empty user", http.StatusBadRequest)
 		return
 	}
+
 	userID, err := strconv.ParseInt(q, 10, 64)
 	if err != nil {
 		log.Println("Not correct user ID")
@@ -29,15 +31,12 @@ func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if value, ok, err := s.Storage.GetBalance(userID); !ok {
+	if value, ok, _ := s.Storage.GetBalance(userID); !ok {
 		log.Println("No such user")
 		http.Error(w, "No such user", http.StatusNotFound)
 		return
 	} else {
-		//we get balance in if statement
-		//need to return marshalled user balance
 		w.Header().Set("Content-Type", "application/json")
-		//w.Header().Set("Location", string(value))
 		w.WriteHeader(http.StatusFound)
 		response := balanceStruct{
 			UserID:  userID,
@@ -50,7 +49,6 @@ func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println("Get balance success")
-		//log.Println("HTTP GET request served. Got token:", q, " Sent URL:", value)
 	}
 	return
 }

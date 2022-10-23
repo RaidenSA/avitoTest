@@ -6,18 +6,6 @@ import (
 )
 
 func (db DataBase) Reserve(userID int64, serviceID int64, orderID int64, sum float32) error {
-	/*connection, err := sql.Open("postgres", db.ConnStr)
-	if err != nil {
-		return err
-	}
-	defer func(connection *sql.DB) {
-		err := connection.Close()
-		if err != nil {
-			log.Fatal(err, "defer error")
-		}
-	}(connection)
-
-	*/
 	ctx := context.Background()
 	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -34,7 +22,7 @@ func (db DataBase) Reserve(userID int64, serviceID int64, orderID int64, sum flo
 		}
 		return err
 	}
-	//curTime :=time.Now().Format("2006-01-02")
+
 	_, err = tx.ExecContext(ctx, "insert into avitotest.public.reserved (userid, serviceid, orderid, sum) values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
 	if err != nil {
 		log.Println(err, "transaction insert error")
