@@ -1,7 +1,9 @@
 package storage
 
+import "database/sql"
+
 type DataBase struct {
-	ConnStr string
+	Db *sql.DB
 }
 
 type BalanceStorage interface {

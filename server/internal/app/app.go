@@ -2,19 +2,23 @@ package app
 
 import (
 	"avitoTest/server/internal/storage"
+	"database/sql"
+	"log"
 )
 
-const Addr = "localhost:8080"
-const user = "avitotestuser"
-const myPass = "avitotestpass"
-const dbname = "avitotest"
-const connStr = "user=" + user + " password=" + myPass + " dbname=" + dbname + " sslmode=disable"
-const GetBalanceEndPoint = "/balance/"
-const AddBalanceEndPoint = "/addBalance"
-const ReserveEndPoint = "/reserve"
-const AcquireEndPoint = "/acquire"
-const ReportEndPoint = "/report/"
-const DetailEndPoint = "/detail/"
+const (
+	Addr               = "localhost:8080"
+	user               = "avitotestuser"
+	myPass             = "avitotestpass"
+	dbname             = "avitotest"
+	connStr            = "user=" + user + " password=" + myPass + " dbname=" + dbname + " sslmode=disable"
+	GetBalanceEndPoint = "/balance/"
+	AddBalanceEndPoint = "/addBalance"
+	ReserveEndPoint    = "/reserve"
+	AcquireEndPoint    = "/acquire"
+	ReportEndPoint     = "/report/"
+	DetailEndPoint     = "/detail/"
+)
 
 type balanceStruct struct {
 	UserID  int64
@@ -41,17 +45,32 @@ type transactionStruct struct {
 */
 
 type Server struct {
-	Storage storage.BalanceStorage
+	Storage storage.DataBase
+}
+
+func ConnDB(conStr string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", conStr)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 func New() *Server {
-	var stor storage.BalanceStorage
-	stor = storage.DataBase{
-		ConnStr: connStr,
+	db, err := ConnDB(connStr)
+	if err != nil {
+		log.Fatal(err)
 	}
 	s := &Server{
-		Storage: stor,
+		storage.DataBase{db},
 	}
-
 	return s
+}
+
+func Close(s *Server) {
+	err := s.Storage.Db.Close()
+	if err != nil {
+		log.Fatal(err, "defer error")
+	}
+	return
 }

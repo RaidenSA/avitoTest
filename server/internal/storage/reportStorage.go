@@ -7,18 +7,19 @@ import (
 )
 
 func (db DataBase) Report(period string) (map[int][]string, int, error) {
-	//open connection
-	connection, err := sql.Open("postgres", db.ConnStr)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer func(connection *sql.DB) {
-		err := connection.Close()
+	/*
+		connection, err := sql.Open("postgres", db.ConnStr)
 		if err != nil {
-			log.Fatal(err, "defer error")
+			return nil, 0, err
 		}
-	}(connection)
-	rows, err := connection.Query("select serviceid, sum(sum) from avitotest.public.finished where updated < to_date($1,'YYYY-MM') and updated >to_date($1,'YYYY-MM')-interval '1 month' group by serviceid", period)
+		defer func(connection *sql.DB) {
+			err := connection.Close()
+			if err != nil {
+				log.Fatal(err, "defer error")
+			}
+		}(connection)
+	*/
+	rows, err := db.Db.Query("select serviceid, sum(sum) from avitotest.public.finished where updated < to_date($1,'YYYY-MM') and updated >to_date($1,'YYYY-MM')-interval '1 month' group by serviceid", period)
 	if err != nil {
 		return nil, 0, err
 	}

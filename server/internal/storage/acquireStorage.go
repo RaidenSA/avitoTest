@@ -2,12 +2,11 @@ package storage
 
 import (
 	"context"
-	"database/sql"
 	"log"
 )
 
 func (db DataBase) Acquire(userID int64, serviceID int64, orderID int64, sum float32) error {
-	connection, err := sql.Open("postgres", db.ConnStr)
+	/*connection, err := sql.Open("postgres", db.ConnStr)
 	if err != nil {
 		return err
 	}
@@ -16,9 +15,9 @@ func (db DataBase) Acquire(userID int64, serviceID int64, orderID int64, sum flo
 		if err != nil {
 			log.Fatal(err, "defer error")
 		}
-	}(connection)
+	}(connection)*/
 	ctx := context.Background()
-	tx, err := connection.BeginTx(ctx, nil)
+	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Println(err, "transaction error")
 		return err

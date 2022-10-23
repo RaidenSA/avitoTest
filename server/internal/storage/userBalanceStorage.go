@@ -2,25 +2,27 @@ package storage
 
 import (
 	"context"
-	"database/sql"
 	"log"
 )
 
 func (db DataBase) GetBalance(userID int64) (float32, bool, error) {
 	//open connection
-	connection, err := sql.Open("postgres", db.ConnStr)
-	if err != nil {
-		return 0, false, err
-	}
-	defer func(connection *sql.DB) {
-		err := connection.Close()
+	/*
+		connection, err := sql.Open("postgres", db.ConnStr)
 		if err != nil {
-			log.Fatal(err, "defer error")
+			return 0, false, err
 		}
-	}(connection)
-	row := connection.QueryRow("select userBalance from avitotest.public.balance where userID = $1", userID)
+		defer func(connection *sql.DB) {
+			err := connection.Close()
+			if err != nil {
+				log.Fatal(err, "defer error")
+			}
+		}(connection)
+
+	*/
+	row := db.Db.QueryRow("select userBalance from avitotest.public.balance where userID = $1", userID)
 	var balance float32
-	err = row.Scan(&balance)
+	err := row.Scan(&balance)
 	if err != nil {
 		return 0, false, err
 	}
@@ -28,18 +30,20 @@ func (db DataBase) GetBalance(userID int64) (float32, bool, error) {
 }
 
 func (db DataBase) InsertBalance(userID int64, newBalance float32) error {
-	connection, err := sql.Open("postgres", db.ConnStr)
-	if err != nil {
-		return err
-	}
-	defer func(connection *sql.DB) {
-		err := connection.Close()
+	/*
+		connection, err := sql.Open("postgres", db.ConnStr)
 		if err != nil {
-			log.Fatal(err, "defer error")
+			return err
 		}
-	}(connection)
+		defer func(connection *sql.DB) {
+			err := connection.Close()
+			if err != nil {
+				log.Fatal(err, "defer error")
+			}
+		}(connection)
+	*/
 	ctx := context.Background()
-	tx, err := connection.BeginTx(ctx, nil)
+	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Println(err, "transaction error")
 		return err
@@ -70,7 +74,7 @@ func (db DataBase) InsertBalance(userID int64, newBalance float32) error {
 }
 
 func (db DataBase) UpdateBalance(userID int64, newBalance float32) error {
-	connection, err := sql.Open("postgres", db.ConnStr)
+	/*connection, err := sql.Open("postgres", db.ConnStr)
 	if err != nil {
 		return err
 	}
@@ -80,13 +84,14 @@ func (db DataBase) UpdateBalance(userID int64, newBalance float32) error {
 			log.Fatal(err, "defer error")
 		}
 	}(connection)
+	*/
 	ctx := context.Background()
-	tx, err := connection.BeginTx(ctx, nil)
+	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Println(err, "transaction error")
 		return err
 	}
-	_, err = connection.Exec("update avitotest.public.balance set userBalance = $2 where userID = $1", userID, newBalance)
+	_, err = tx.ExecContext(ctx, "update avitotest.public.balance set userBalance = $2 where userID = $1", userID, newBalance)
 	if err != nil {
 		log.Println(err, " insert error")
 		err2 := tx.Rollback()

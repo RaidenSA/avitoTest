@@ -7,17 +7,18 @@ import (
 
 func (db DataBase) Detailing(userID int64, limit int, page int) (map[int]DetailStruct, error) {
 	//open connection
-	connection, err := sql.Open("postgres", db.ConnStr)
-	if err != nil {
-		return nil, err
-	}
-	defer func(connection *sql.DB) {
-		err := connection.Close()
+	/*
+		connection, err := sql.Open("postgres", db.ConnStr)
 		if err != nil {
-			log.Fatal(err, "defer error")
+			return nil, err
 		}
-	}(connection)
-	rows, err := connection.Query("select * from avitotest.public.transactions where userid=$1 order by created desc, sum desc limit $2 offset $3;", userID, limit, limit*(page-1))
+		defer func(connection *sql.DB) {
+			err := connection.Close()
+			if err != nil {
+				log.Fatal(err, "defer error")
+			}
+		}(connection)*/
+	rows, err := db.Db.Query("select * from avitotest.public.transactions where userid=$1 order by created desc, sum desc limit $2 offset $3;", userID, limit, limit*(page-1))
 	if err != nil {
 		return nil, err
 	}
