@@ -40,7 +40,7 @@ func (db DataBase) Acquire(userID int64, serviceID int64, orderID int64, sum flo
 		}
 		return err
 	}
-	_, err = tx.ExecContext(ctx, "insert into avitotest.public.finished values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.finished(userid, serviceid, orderid, sum) values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
 	if err != nil {
 		log.Println(err, "transaction update error")
 		err2 := tx.Rollback()
