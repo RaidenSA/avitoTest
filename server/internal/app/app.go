@@ -13,6 +13,8 @@ const GetBalanceEndPoint = "/balance/"
 const AddBalanceEndPoint = "/addBalance"
 const ReserveEndPoint = "/reserve"
 const AcquireEndPoint = "/acquire"
+const ReportEndPoint = "/report/"
+const DetailEndPoint = "/detail/"
 
 type balanceStruct struct {
 	UserID  int64

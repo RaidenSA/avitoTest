@@ -1,13 +1,10 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
 	"log"
 )
-
-type DataBase struct {
-	ConnStr string
-}
 
 func (db DataBase) GetBalance(userID int64) (float32, bool, error) {
 	//open connection
@@ -41,10 +38,33 @@ func (db DataBase) InsertBalance(userID int64, newBalance float32) error {
 			log.Fatal(err, "defer error")
 		}
 	}(connection)
-	_, err = connection.Exec("insert into avitotest.public.balance (userID, userBalance) values ($1, $2)", userID, newBalance)
+	ctx := context.Background()
+	tx, err := connection.BeginTx(ctx, nil)
 	if err != nil {
-		log.Println(err, "connection insert error")
+		log.Println(err, "transaction error")
 		return err
+	}
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.balance (userID, userBalance) values ($1, $2)", userID, newBalance)
+	if err != nil {
+		log.Println(err, " insert error")
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.transactions (userID, sum, type) values ($1, $2, $3)", userID, newBalance, "NEW USER")
+	if err != nil {
+		log.Println(err, " log error")
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+	err2 := tx.Commit()
+	if err2 != nil {
+		return err2
 	}
 	return nil
 }
@@ -60,10 +80,33 @@ func (db DataBase) UpdateBalance(userID int64, newBalance float32) error {
 			log.Fatal(err, "defer error")
 		}
 	}(connection)
+	ctx := context.Background()
+	tx, err := connection.BeginTx(ctx, nil)
+	if err != nil {
+		log.Println(err, "transaction error")
+		return err
+	}
 	_, err = connection.Exec("update avitotest.public.balance set userBalance = $2 where userID = $1", userID, newBalance)
 	if err != nil {
-		log.Println(err, "connection insert error")
+		log.Println(err, " insert error")
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return err2
+		}
 		return err
+	}
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.transactions (userID, sum, type) values ($1, $2,$3)", userID, newBalance, "CREDITING")
+	if err != nil {
+		log.Println(err, " log error")
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+	err2 := tx.Commit()
+	if err2 != nil {
+		return err2
 	}
 	return nil
 }

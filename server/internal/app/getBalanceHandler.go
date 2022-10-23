@@ -19,13 +19,13 @@ func (s *Server) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(q)
 	if q == "" {
 		log.Println("Empty user")
-		http.Error(w, "Empty user", http.StatusNotFound)
+		http.Error(w, "Empty user", http.StatusBadRequest)
 		return
 	}
 	userID, err := strconv.ParseInt(q, 10, 64)
 	if err != nil {
 		log.Println("Not correct user ID")
-		http.Error(w, "Not correct user ID", http.StatusNotFound)
+		http.Error(w, "Not correct user ID", http.StatusBadRequest)
 		return
 	}
 

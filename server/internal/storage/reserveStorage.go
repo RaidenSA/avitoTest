@@ -33,7 +33,8 @@ func (db DataBase) Reserve(userID int64, serviceID int64, orderID int64, sum flo
 		}
 		return err
 	}
-	_, err = tx.ExecContext(ctx, "insert into avitotest.public.reserved values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
+	//curTime :=time.Now().Format("2006-01-02")
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.reserved (userid, serviceid, orderid, sum) values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
 	if err != nil {
 		log.Println(err, "transaction insert error")
 		err2 := tx.Rollback()
@@ -42,6 +43,17 @@ func (db DataBase) Reserve(userID int64, serviceID int64, orderID int64, sum flo
 		}
 		return err
 	}
+
+	_, err = tx.ExecContext(ctx, "insert into avitotest.public.transactions (userid,serviceid,orderid, sum) values ($1,$2,$3,$4)", userID, serviceID, orderID, sum)
+	if err != nil {
+		log.Println(err, "transaction insert error")
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		log.Println(err, "transaction error")
