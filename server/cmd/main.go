@@ -9,6 +9,7 @@ import (
 func main() {
 	s := app.New()
 	log.Println("HTTP Running")
+	defer s.Close()
 	http.HandleFunc(app.GetBalanceEndPoint, s.GetBalanceHandler)
 	http.HandleFunc(app.AddBalanceEndPoint, s.AddBalanceHandler)
 	http.HandleFunc(app.ReserveEndPoint, s.ReserveHandler)
