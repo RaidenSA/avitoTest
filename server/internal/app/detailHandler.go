@@ -16,7 +16,7 @@ func (s *Server) DetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	inString := r.URL.String()
 	inString = inString[(len(DetailEndPoint)):]
-	log.Println(inString)
+	//log.Println(inString)
 	//_, err := time.Parse("2006-01",period)
 	str := strings.Split(inString, "-")
 	if len(str) != 3 {
