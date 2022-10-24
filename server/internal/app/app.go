@@ -4,14 +4,15 @@ import (
 	"avitoTest/server/internal/storage"
 	"database/sql"
 	"log"
+	"time"
 )
 
 const (
-	Addr               = "localhost:8080"
+	Addr               = ":8080"
 	user               = "avitotestuser"
 	myPass             = "avitotestpass"
 	dbname             = "avitotest"
-	connStr            = "user=" + user + " password=" + myPass + " dbname=" + dbname + " sslmode=disable"
+	connStr            = "host=postgres" + " port=5432" + " user=" + user + " password=" + myPass + " dbname=" + dbname + " sslmode=disable"
 	GetBalanceEndPoint = "/balance/"
 	AddBalanceEndPoint = "/addBalance"
 	ReserveEndPoint    = "/reserve"
@@ -51,8 +52,26 @@ type Server struct {
 func ConnDB(conStr string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", conStr)
 	if err != nil {
+		log.Println("db connection error")
 		return nil, err
 	}
+	connectionHealthFlag := false
+	for i := 0; i < 4; i++ {
+		err = db.Ping()
+		if err != nil {
+			log.Println("db health check error")
+			//return nil, err
+			time.Sleep(3 * time.Second)
+			continue
+		}
+		connectionHealthFlag = true
+		break
+	}
+	if !connectionHealthFlag {
+		log.Fatal("could not connect to db")
+	}
+
+	log.Println("connected to db successfully")
 	return db, nil
 }
 
